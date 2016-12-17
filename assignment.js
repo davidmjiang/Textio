@@ -36,17 +36,77 @@ function MinHeap(){
 	this.addNode = function(phrase, count){
 		var node = new HeapNode(phrase, count);
 		if(this.count === 0){
+			this.insert(node,this.root);	
+		}
+		else if(this.count < 10 && this.notASubset(node)){
+			this.insert(node, this.root);
+		}
+		else{
+			if(node.count > this.root.count && this.notASubset(node)){
+				this.insert(node, this.root);
+			}
+		}
+	};
+	this.notASubset = function(node){
+		var currentNode = this.root;
+		while(currentNode){
+			if(currentNode.phrase.indexOf(node.phrase) !== -1){
+				return false;
+			}
+			//if currentNode is a subset of the new node, remove it
+			if(node.phrase.indexOf(currentNode.phrase) !== -1){
+				this.remove(currentNode);
+			}
+			currentNode = currentNode.next;
+		}
+		return true;
+	};
+	this.insert = function(node, startAt){
+		//in case the root is removed during notASubstring
+		if(this.count === 0){
 			this.count ++;
 			this.root = node;
 		}
-		else if(this.count < 10 && notASubset(node)){
-			insert(node, this.root);
+		else{
+			this.count ++;
+			//if the node to insert has a lower count than the first node
+			if(startAt.count > node.count){
+				node.next = startAt;
+				return;
+			}
+			var currentNode = startAt;
+			while(currentNode.count < node.count && currentNode.next){
+				currentNode = currentNode.next;
+			}
+			var temp = currentNode.next;
+			currentNode.next = node;
+			node.next = temp;
+			//remove the min if list is more than 10
+			if(this.count > 10){
+				this.root = this.root.next;
+			}	
+		}
+	};
+	this.remove = function(node){
+		if(node.phrase === this.root.phrase){
+			this.root = this.root.next;
 		}
 		else{
-			if(node.count > this.root.count && notASubset(node)){
-				insert(node, this.root);
-			}
+			var nodeBefore = this.findNodeBefore(node);
+			nodeBefore.next = node.next;
 		}
+		this.count --;
+	};
+	//assuming its not the root
+	this.findNodeBefore = function(node){
+		var currentNode = this.root;
+		while(currentNode.next){
+			if(currentNode.next.phrase === node.phrase){
+				return currentNode;
+			}
+			currentNode = currentNode.next;
+		}
+		return false;
 	};
 	this.print = function(){
 		var currentNode = this.root;
@@ -56,37 +116,6 @@ function MinHeap(){
 		}
 	};
 }
-
-var notASubset = function(node){
-	var currentNode = top10.root;
-	while(currentNode){
-		if(currentNode.phrase.indexOf(node.phrase) !== -1){
-			return false;
-		}
-		currentNode = currentNode.next;
-	}
-	return true;
-};
-
-var insert = function(node, startAt){
-	top10.count ++;
-	//if the node to insert has a lower count than the first node
-	if(startAt.count > node.count){
-		node.next = startAt;
-		return;
-	}
-	var currentNode = startAt;
-	while(currentNode.count < node.count && currentNode.next){
-		currentNode = currentNode.next;
-	}
-	var temp = currentNode.next;
-	currentNode.next = node;
-	node.next = temp;
-	//remove the min if list is more than 10
-	if(top10.count > 10){
-		top10.root = top10.root.next;
-	}	
-};
 
 var head = new TrieNode("");
 var top10 = new MinHeap();
@@ -174,13 +203,8 @@ var getFrequentPhrases = function(myDocument){
 	top10.print();
 };
 
+var myString = "For the past decade, Oregon’s calling card has been speed: fast players on offense, fast players on defense, and a scheme constructed to run plays faster than opponents could prepare for them. The Ducks outsprinted their Pac-12 opponents time and again, routinely finding themselves prominently mentioned in the national championship conversation.Just two years ago, quarterback Marcus Mariota won the Heisman Trophy by the second-largest margin in the award’s history and the Ducks walloped Florida State, 59–20, in the College Football Playoff semifinal. Last year they won just nine games, dropping out of championship contention quickly, and fans hoped it was a blip on the radar before the team returned to the 10-win plateau. Instead, the Ducks went 4–8 in 2016 — and it wasn’t a good 4–8, either. At least Notre Dame lost seven close games. Oregon got blown out several times.Hypothetically, Helfrich’s strength is developing quarterbacks, but instead he developed a quarterback problem. He hired college football laughingstock Brady Hoke as his defensive coordinator, and Hoke did what Hoke does best: look slightly confused while an aggressively bad thing happened under his watch. The Ducks rank 126th out of 128 FBS teams in scoring defense, never allowing fewer than 26 points in a game — not even against FCS opponent UC Davis, which also fired its coach after the season. Perhaps worst of all, Oregon lost to rival Oregon State for the first time since 2007. So the Ducks fired Helfrich and turned to Willie Taggart, who revived Western Kentucky (0–12 the season before he arrived; 7–5 when he left) and then the University of South Florida (3–9 before he arrived; 10–2 this season), to replace him. This isn’t how Oregon does things: The school hadn’t fired a head coach or hired a head coach from outside the program since 1976, a truly preposterous fact compared with the quickly spinning coaching carousel everybody else in this sport is riding.But none of this is how Oregon does things. The idea of Oregon as a consistent national championship contender is a new one. The program skyrocketed to prominence using a unique formula, and as suddenly as that formula worked, it fizzled out. No, Taggart isn’t even a tad Oregon, but he might be the best option to help Oregon maintain the level its fan base now expects.If you imagine college football’s upper tier as a country club, you can hear everybody snickering at Oregon. The Ducks are among the newest members, having only recently been granted admission. They have no national championships and half of their conference titles have come since 2000. Their rise to success is heavily linked to the rise of Nike, a multibillion-dollar corporation run by free-spending alumnus Phil Knight. They have bad etiquette out on the course — their greatest successes came under Kelly, an offensive innovator who refused to play the way that everybody else expected him to. And they committed the no. 1 sin of country-club membership — they broke the dress code. While many other powerhouses sport the same jersey designs they’ve had since they wore leather helmets, Nike makes the Ducks fly, giving them new, extremely loud uniform combos every game. Oregon isn’t old money, and doesn’t act like it. And nothing makes country-club members more angry than the nouveau riche.The Ducks have to think differently, and not just because the state of Oregon considers itself no. 1 in weirdness. To be a national title contender, a college football program pretty much has to recruit more four- and five-star prospects than two- and three-star players. The state of Oregon produces between zero and two four-star recruits in most years, and it manages only a few five-stars per decade. (The state’s last five-star prospect, per 247Sports.com’s composite rankings: running back Thomas Tyner, in 2013, who played two seasons for the Ducks before retiring due to medical reasons.)";
 
-//case insensitive?
-//ignore numbers, punctuation?
-//split into sentences (sentences end in one of these (.?!) but what about Mr. and Mrs. and decimals?)
-//find every subset of 3-10 words
-//keep track of their counts in a hash
-//keep track of the top 10 frequent phrases in a min heap
-//trie?
-//what to do in case of ties? for now, priority goes to what comes first in the text
-//do not count a phrase if every occurance of that phrase is also contained in another longer phrase
+getFrequentPhrases(myString);
+
+
