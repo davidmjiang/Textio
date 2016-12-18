@@ -235,15 +235,17 @@ var listResults = function(){
 	var countHeader = $("<th></th>").text("Occurances");
 	var tableHeader = $("<tr></tr>").prepend(countHeader).prepend(phraseHeader);
 	$("#results").prepend(tableHeader);
+	$("#results").show();
 };
 
 $(document).ready(function(){
 	$("#analyze").click(function(e){
 		e.preventDefault();
+		$("#results tr").remove();
 		var myString = $("#input").val();
 		getFrequentPhrases(myString);
 		listResults();
-	})
+	});
 });
 
 
