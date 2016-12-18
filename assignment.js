@@ -54,7 +54,7 @@ function MinHeap(){
 			if(currentNode.phrase.indexOf(node.phrase) !== -1){
 				return false;
 			}
-			//if currentNode is a subset of the new node, remove it
+			//if currentNode is a subset of the new node, remove currentNode
 			if(node.phrase.indexOf(currentNode.phrase) !== -1){
 				this.remove(currentNode);
 			}
@@ -77,6 +77,7 @@ function MinHeap(){
 			}
 			var currentNode = startAt;
 			var prevNode;
+			//find the right place to insert
 			while(node.count > currentNode.count && currentNode.next){
 				prevNode = currentNode;
 				currentNode = currentNode.next;
@@ -169,7 +170,6 @@ var addToTrie = function(phrase, startAt){
 };
 
 //take a line and add all phrases in the line to the trie
-//add to min heap if necessary
 var parse = function(line){
 	var words = line.split(" ");
 	var numWords = words.length;
@@ -186,6 +186,7 @@ var parse = function(line){
 	}
 };
 
+//check every phrase in the trie and send it to addNode
 var addToHeap = function(node, startAt){
 		var children = node.children;
 		while (children.length){
@@ -197,9 +198,6 @@ var addToHeap = function(node, startAt){
 				words = [node.word];
 			}
 			var endOfPhrase = children.pop();
-			// if(endOfPhrase.word === "survey"){
-			// 	debugger;
-			// }
 			words.push(endOfPhrase.word);
 			if(endOfPhrase.count){
 				top10.addNode(words.join(" "), endOfPhrase.count);
@@ -214,6 +212,7 @@ var getFrequentPhrases = function(myDocument){
 	//downcase everything, mark the end of sentences and split on that
 	var sentences = myDocument.toLowerCase().replace(/[!.?]/g, "|").split("|");
 	sentences.forEach(function(line){
+		//remove punctuation and leading/trailing whitespace
 		parse(line.replace(/[,:()\n]/,"").trim());
 	});
 	head.children.forEach(function(child){
@@ -221,6 +220,8 @@ var getFrequentPhrases = function(myDocument){
 	});
 	top10.print();
 };
+
+///Code below is for the basic interface
 
 var listResults = function(){
 	var currentNode = top10.root;
