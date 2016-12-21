@@ -1,6 +1,11 @@
 // PROBLEM:
 // Given a string representing a document, write a function which returns the top 10 most frequent repeated phrases. A phrase is a stretch of three to ten consecutive words and cannot span sentences. Only include a phrase if it is not a subset of another, longer phrase (if “calm cool” and “calm cool and collected” are repeated, do not include “calm cool” in the returned set).
 
+
+//Things I would change:
+// Account for Mr., Mrs., etc. for more accurate sentence breaking
+// notASubset returns a boolean but also has side effects, which is unexpected behavior
+// use look-ahead and look-behind in the trie to account for subsets instead of checking against every node in the heap?
 "use strict";
 
 function TrieNode(word){
@@ -201,6 +206,11 @@ var addToHeap = function(node, startAt){
 			words.push(endOfPhrase.word);
 			if(endOfPhrase.count){
 				top10.addNode(words.join(" "), endOfPhrase.count);
+				//check if endOfPhrase has any chilren
+				//if it does call addToHeap(endOfPhrase, words)
+				if(endOfPhrase.children.length){
+					addToHeap(endOfPhrase, words);
+				}
 			} 
 			else{
 				addToHeap(endOfPhrase, words);
