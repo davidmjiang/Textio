@@ -61,7 +61,9 @@ function MinHeap(){
 			}
 			//if currentNode is a subset of the new node, remove currentNode
 			if(node.phrase.indexOf(currentNode.phrase) !== -1){
-				this.remove(currentNode);
+				if(node.count === currentNode.count){
+					this.remove(currentNode);
+				}
 			}
 			currentNode = currentNode.next;
 		}
